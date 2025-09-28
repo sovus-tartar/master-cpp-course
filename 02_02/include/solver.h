@@ -17,8 +17,8 @@ private:
     std::array<double, kMaxSolves> xArr{};
 
 public:
-    Solves()                     : nSolves(0), xArr({NAN, NAN}) {};
-    Solves(const double x)             : nSolves(1), xArr{x, NAN}     {};
+    Solves()                                 : nSolves(0), xArr({NAN, NAN}) {};
+    Solves(const double x)                   : nSolves(1), xArr{x, NAN}     {};
     Solves(const double x1, const double x2) : nSolves(2), xArr({x1, x2})   {};
 
     void Print() const;
