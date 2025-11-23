@@ -1,0 +1,93 @@
+#pragma once
+#include <cstddef>
+#include <algorithm>
+#include <utility>
+#include <initializer_list>
+#include <print>
+
+class Vector
+{
+public:
+    Vector() : m_array(nullptr), m_size(0), m_capacity(0)
+    {
+        std::print("Vector:: Vector (1)\n");
+    }
+
+    Vector(std::initializer_list<int> list)
+        : m_size(std::size(list)), m_capacity(std::size(list))
+    {
+        std::print("Vector:: Vector (2)\n");
+        m_array = m_size ? new int[m_capacity]{} : nullptr;
+        std::ranges::copy(list, m_array);
+    }
+
+    Vector(Vector const & other)
+        : m_size(other.m_size), m_capacity(other.m_capacity)
+    {
+        std::print("Vector:: Vector (3)\n");
+        m_array = m_size ? new int[m_capacity]{} : nullptr;
+        std::ranges::copy(other.m_array, other.m_array + other.m_size, m_array);
+    }
+
+    Vector(Vector && other)
+        : m_array(std::exchange(other.m_array, nullptr)),
+          m_size(std::exchange(other.m_size, 0)),
+          m_capacity(std::exchange(other.m_capacity, 0))
+    {
+        std::print("Vector:: Vector (4)\n");
+    }
+
+    ~Vector()
+    {
+        std::print("Vector::~Vector\n");
+        delete[] m_array;
+    }
+
+    Vector & operator=(Vector other)
+    {
+        std::print("Vector::operator= (4)\n");
+        swap(other);
+        return *this;
+    }
+
+    void swap(Vector & other)
+    {
+        std::swap(m_array, other.m_array);
+        std::swap(m_size, other.m_size);
+        std::swap(m_capacity, other.m_capacity);
+    }
+
+    // Новые функции
+    std::size_t size() const { return m_size; }
+    std::size_t capacity() const { return m_capacity; }
+    bool empty() const { return m_size == 0; }
+
+    void clear() { m_size = 0; }
+
+    void push_back(int value)
+    {
+        if (m_size == m_capacity)
+        {
+            std::size_t new_capacity = m_capacity ? 2 * m_capacity : 1;
+            int* new_array = new int[new_capacity]{};
+
+            if (m_array)
+            {
+                std::ranges::copy(m_array, m_array + m_size, new_array);
+                delete[] m_array;
+            }
+
+            m_array = new_array;
+            m_capacity = new_capacity;
+        }
+
+        m_array[m_size++] = value;
+    }
+
+    int operator[](std::size_t index) const { return m_array[index]; }
+
+private:
+    int* m_array = nullptr;
+    std::size_t m_size = 0;
+    std::size_t m_capacity = 0;
+};
